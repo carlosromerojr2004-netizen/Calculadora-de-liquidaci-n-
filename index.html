@@ -1,0 +1,358 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Liquidación y Prestaciones - El Salvador</title>
+    <style>
+        :root {
+            --primary: #6d28d9;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --bg-color: #f5f3ff;
+            --text-color: #1f2937;
+            --border-color: #ddd6fe;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4c1d95 0%, #7e22ce 45%, #ec4899 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 34px;
+            border-radius: 22px;
+            box-shadow: 0 20px 50px rgba(40, 12, 80, 0.3);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        h1, h2, h3 { color: var(--primary); }
+        h1 { grid-column: 1 / -1; text-align: center; border-bottom: 3px solid var(--secondary); padding-bottom: 16px; margin-top: 0; letter-spacing: .3px;}
+        .block {
+            background: linear-gradient(145deg, #ffffff, #f5f3ff);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 7px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+        input:focus, select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+        .employee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .employee-grid .form-group { margin-bottom: 4px; }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .checkbox-group label { margin: 0; font-weight: normal; }
+        button {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 9px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(109,40,217,.3); }
+        
+        /* Panel de Resultados */
+        .results-panel {
+            background: linear-gradient(145deg, #ecfeff, #f5f3ff);
+            border: 1px solid #c4b5fd;
+            padding: 20px;
+            border-radius: 14px;
+            height: fit-content;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #b3d4ec;
+        }
+        .result-item span:last-child {
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            margin-top: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary);
+            border-top: 2px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Prestaciones Laborales (El Salvador)</h1>
+
+    <!-- Formulario de Captura -->
+    <div class="form-section">
+        <!-- Bloque 0: Datos del empleado -->
+        <div class="block">
+            <h3>Datos del empleado</h3>
+            <div class="employee-grid">
+                <div class="form-group">
+                    <label for="nombreEmpleado">Nombre completo:</label>
+                    <input type="text" id="nombreEmpleado" placeholder="Ej. Carlos Hernández">
+                </div>
+                <div class="form-group">
+                    <label for="dui">DUI:</label>
+                    <input type="text" id="dui" placeholder="Ej. 00000000-0">
+                </div>
+                <div class="form-group">
+                    <label for="cargo">Cargo o puesto:</label>
+                    <input type="text" id="cargo" placeholder="Ej. Asistente administrativo">
+                </div>
+                <div class="form-group">
+                    <label for="departamento">Departamento:</label>
+                    <input type="text" id="departamento" placeholder="Ej. Recursos Humanos">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="tel" id="telefono" placeholder="Ej. 7000-0000">
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo electrónico:</label>
+                    <input type="email" id="correo" placeholder="Ej. empleado@correo.com">
+                </div>
+                <div class="form-group">
+                    <label for="fechaIngreso">Fecha de ingreso:</label>
+                    <input type="date" id="fechaIngreso">
+                </div>
+                <div class="form-group">
+                    <label for="fechaSalida">Fecha de finalización:</label>
+                    <input type="date" id="fechaSalida">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bloque 1: Datos financieros y antigüedad -->
+        <div class="block">
+            <h3>1. Datos financieros y antigüedad</h3>
+            <div class="form-group">
+                <label for="salario">Ingreso mensual (Salario nominal en USD):</label>
+                <input type="number" id="salario" min="0" step="0.01" placeholder="Ej. 600.00">
+            </div>
+            <div class="form-group">
+                <label for="anios">Años laborados (completos):</label>
+                <input type="number" id="anios" min="0" step="1" value="0">
+            </div>
+            <div class="form-group">
+                <label for="meses">Meses laborados (proporcional, de 0 a 11):</label>
+                <input type="number" id="meses" min="0" max="11" step="1" value="0">
+            </div>
+        </div>
+
+        <!-- Bloque 2: Causa de finalización -->
+        <div class="block">
+            <h3>2. Causa de finalización</h3>
+            <div class="form-group">
+                <label for="motivo">Tipo de Cierre:</label>
+                <select id="motivo">
+                    <option value="despido">Despido Injustificado</option>
+                    <option value="renuncia">Renuncia Voluntaria</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bloque 3: Jornadas Extraordinarias -->
+        <div class="block">
+            <h3>3. Jornadas Extraordinarias y Días Especiales</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="noAplica" onchange="toggleExtras()">
+                <label for="noAplica">No aplica (Sin jornadas especiales en el periodo)</label>
+            </div>
+            <div id="extrasFields">
+                <div class="form-group">
+                    <label for="extrasDiurnas">Horas extras diurnas (Totales):</label>
+                    <input type="number" id="extrasDiurnas" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="extrasNocturnas">Horas extras nocturnas (7:00pm - 6:00am):</label>
+                    <input type="number" id="extrasNocturnas" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="asuetos">Días de asueto laborados:</label>
+                    <input type="number" id="asuetos" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label for="descansos">Días de descanso semanal laborados:</label>
+                    <input type="number" id="descansos" min="0" value="0">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="calcular()">Calcular Liquidación</button>
+    </div>
+
+    <!-- Panel de Resultados -->
+    <div class="results-panel">
+        <h2>Desglose de Montos (USD)</h2>
+        <div class="result-item">
+            <span>Vacación proporcional acumulada:</span>
+            <span id="resVacacion">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Aguinaldo proporcional acumulado:</span>
+            <span id="resAguinaldo">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Indemnización / Compensación:</span>
+            <span id="resIndemnizacion">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Horas extras diurnas:</span>
+            <span id="resExDiurnas">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Horas extras nocturnas:</span>
+            <span id="resExNocturnas">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Días de asueto laborados:</span>
+            <span id="resAsuetos">$0.00</span>
+        </div>
+        <div class="result-item">
+            <span>Días de descanso laborados:</span>
+            <span id="resDescansos">$0.00</span>
+        </div>
+        
+        <div class="total-item">
+            <span>Total a Recibir:</span>
+            <span id="resTotal">$0.00</span>
+        </div>
+        <p style="font-size: 0.75em; color: #555; margin-top: 15px;">
+            *Nota: Cálculo basado en las fórmulas del Código de Trabajo de El Salvador. Para la renuncia voluntaria, es requisito legal tener al menos 2 años de servicio continuo.
+        </p>
+    </div>
+</div>
+
+<script>
+    // Función para habilitar/deshabilitar bloque 3
+    function toggleExtras() {
+        const isChecked = document.getElementById('noAplica').checked;
+        const inputs = document.querySelectorAll('#extrasFields input');
+        inputs.forEach(input => {
+            input.disabled = isChecked;
+            if(isChecked) input.value = 0;
+        });
+    }
+
+    // Función principal de cálculo
+    function calcular() {
+        // 1. Obtener valores
+        const salario = parseFloat(document.getElementById('salario').value) || 0;
+        const anios = parseInt(document.getElementById('anios').value) || 0;
+        const meses = parseInt(document.getElementById('meses').value) || 0;
+        const motivo = document.getElementById('motivo').value;
+
+        const extrasDiurnas = parseFloat(document.getElementById('extrasDiurnas').value) || 0;
+        const extrasNocturnas = parseFloat(document.getElementById('extrasNocturnas').value) || 0;
+        const asuetos = parseFloat(document.getElementById('asuetos').value) || 0;
+        const descansos = parseFloat(document.getElementById('descansos').value) || 0;
+
+        // Cálculos base
+        const salarioDiario = salario / 30;
+        const salarioPorHora = salarioDiario / 8; // Basado en jornada estándar de 8h
+
+        // 2. Vacaciones proporcionales (15 días de salario + 30% de prima, dividido entre 12 meses)
+        // Se asume el cálculo por los meses pendientes del último año
+        const vacacionAnual = (salarioDiario * 15) * 1.30;
+        const montoVacacion = (vacacionAnual / 12) * meses;
+
+        // 3. Aguinaldo proporcional
+        // Tabla de ley: 1 a 3 años (15 días), 3 a 10 años (19 días), más de 10 años (21 días)
+        let diasAguinaldo = 15;
+        if (anios >= 3 && anios < 10) diasAguinaldo = 19;
+        if (anios >= 10) diasAguinaldo = 21;
+        
+        const aguinaldoAnual = salarioDiario * diasAguinaldo;
+        const montoAguinaldo = (aguinaldoAnual / 12) * meses;
+
+        // 4. Indemnización o Compensación
+        let montoIndemnizacion = 0;
+        if (motivo === 'despido') {
+            // Despido injustificado: 30 días de salario por año laborado + proporcional
+            montoIndemnizacion = (salarioDiario * 30 * anios) + (salarioDiario * 30 * (meses / 12));
+        } else if (motivo === 'renuncia') {
+            // Renuncia voluntaria: 15 días de salario por año laborado. Requiere mínimo 2 años.
+            if (anios >= 2) {
+                montoIndemnizacion = (salarioDiario * 15 * anios) + (salarioDiario * 15 * (meses / 12));
+            } else {
+                montoIndemnizacion = 0; // Si es menor a 2 años, no aplica compensación por renuncia
+            }
+        }
+
+        // 5. Jornadas Extraordinarias
+        // Extra diurna: 100% de recargo (pago doble)
+        const montoExDiurnas = extrasDiurnas * (salarioPorHora * 2);
+        
+        // Extra nocturna: 25% recargo por ser noche + 100% por ser extra (Total 2.5x)
+        const montoExNocturnas = extrasNocturnas * (salarioPorHora * 2.5);
+
+        // Asuetos y Descansos: Pago doble (100% de recargo sobre el salario diario)
+        const montoAsuetos = asuetos * (salarioDiario * 2);
+        const montoDescansos = descansos * (salarioDiario * 2);
+
+        // 6. Total
+        const granTotal = montoVacacion + montoAguinaldo + montoIndemnizacion + montoExDiurnas + montoExNocturnas + montoAsuetos + montoDescansos;
+
+        // 7. Mostrar resultados en pantalla
+        const formatear = (monto) => "$" + monto.toFixed(2);
+
+        document.getElementById('resVacacion').innerText = formatear(montoVacacion);
+        document.getElementById('resAguinaldo').innerText = formatear(montoAguinaldo);
+        document.getElementById('resIndemnizacion').innerText = formatear(montoIndemnizacion);
+        document.getElementById('resExDiurnas').innerText = formatear(montoExDiurnas);
+        document.getElementById('resExNocturnas').innerText = formatear(montoExNocturnas);
+        document.getElementById('resAsuetos').innerText = formatear(montoAsuetos);
+        document.getElementById('resDescansos').innerText = formatear(montoDescansos);
+        document.getElementById('resTotal').innerText = formatear(granTotal);
+    }
+</script>
+
+</body>
+</html>
